@@ -1,0 +1,24 @@
+# Pulls OS with nodejs
+FROM matriphe/alpine-nodejs:latest
+
+# Copies code and keys
+
+WORKDIR /home/code
+
+# add src contemt to /home/code
+ADD src /home/code
+
+# add etc content to etc of docker
+ADD etc /etc
+
+# Run NPM
+RUN apk add --no-cache supervisor \
+    && mkdir /var/log/supervisord/ \
+    && cd /home/code && npm install 
+
+# Expose
+EXPOSE 80
+
+ENTRYPOINT /usr/bin/supervisord -n -c /etc/supervisord.conf
+
+

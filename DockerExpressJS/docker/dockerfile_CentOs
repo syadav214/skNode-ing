@@ -1,0 +1,14 @@
+FROM node:boron
+
+# Create app directory
+WORKDIR /home/code
+
+ADD src /home/code
+
+RUN cd /home/code
+
+RUN npm install
+
+EXPOSE 3000
+CMD [ "npm", "start" ]
+
