@@ -9,14 +9,14 @@ beforeAll(() => {
 });
 
 describe('server', () => {
-  it('forbids access to private requests', async () => {
+  it('get ok status', async () => {
     const response = await request(app)
-      .post('/test')
+      .get('/test')
       .send({
         orderId: null
       });
 
     // Unauthorized
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(200);
   });
 });
