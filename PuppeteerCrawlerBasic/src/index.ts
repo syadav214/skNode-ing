@@ -6,8 +6,8 @@ const HTML = require('./handlers/getHTML');
 
 let argv = process.argv;
 let url: string =
-    'https://stackoverflow.com/questions/4351521/how-do-i-pass-command-line-arguments-to-a-node-js-program',
-  filename: string = 'pass-command-line-argument';
+    'https://www.coca-colacompany.com/brands/the-coca-cola-company',
+  filename: string = 'coca-cola';
 
 (async () => {
   switch (argv[2]) {

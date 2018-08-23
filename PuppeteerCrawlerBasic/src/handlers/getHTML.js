@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const linkChecker = require('../libs/linkChecker');
 const fs = require('fs');
 
 module.exports = async function(url, filename) {
@@ -11,7 +12,8 @@ module.exports = async function(url, filename) {
 
   // Wait for the results page to load and display the results.
   // Below line is query selector to get all anchor tags whose are in list tags of class -item
-  let resultsSelector = 'li.-item a';
+  let _linkChecker = new linkChecker(filename);
+  let resultsSelector = _linkChecker.getLinkClasses();
   await page.waitForSelector(resultsSelector);
 
   // Extract the results from the page.
