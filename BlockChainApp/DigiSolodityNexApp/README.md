@@ -9,6 +9,8 @@
     OR
     # for react setup
     $ truffle unbox react
+    # for token
+    $ truffle unbox tutorialtoken
     # create a file in contracts for a new contract
     $ truffle compile
     # run ganache-cli in a separate terminal
