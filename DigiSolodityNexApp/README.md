@@ -4,7 +4,11 @@
     $ npm install -g truffle
     $ mkdir pet-shop
     $ cd pet-shop
+    # for basic setup
     $ truffle init
+    OR
+    # for react setup
+    $ truffle unbox react
     # create a file in contracts for a new contract
     $ truffle compile
     # run ganache-cli in a separate terminal
