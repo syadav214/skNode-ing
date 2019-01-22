@@ -1,3 +1,4 @@
+// Changes the array object
 const fruits = ["Banana", "Orange", "Apple", "Mango"];
 console.log('Before',fruits);
 /* splice has 3 arguments
