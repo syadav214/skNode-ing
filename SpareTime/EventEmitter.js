@@ -12,3 +12,6 @@ const EventEmitter = {
 };
 
 export default EventEmitter;
+
+// EventEmitter.subscribe('onGetLatestTaskCount', () => this.getTaskCount());
+// <button id='test' onClick={() => EventEmitter.dispatch('onGetLatestTaskCount')}  >  Test   </button>
