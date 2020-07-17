@@ -1,4 +1,5 @@
 const express = require('express');
+const { investing } = require('investing-com-api')
 const app = express();
 
 app.use((req, res, next) => {
@@ -9,7 +10,11 @@ app.use((req, res, next) => {
   }
 });
 
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  // current rates
+  const response = await investing('currencies/eur-usd')
+  console.log('response',response)
+ 
   res.send('Hello World');
 });
 
