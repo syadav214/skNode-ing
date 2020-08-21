@@ -29,52 +29,34 @@ const getProperties = (_index) => {
 
 module.exports = async (_index, phrase) => {
   const hits = [];
-  const properties = await getProperties(_index);
-  if (properties !== undefined) {
-    for (let field in properties) {
-      const searchResult = await client.search({
-        index: _index,
-        body: {
-          query: {
-            match_phrase_prefix: {
-              [field]: phrase,
-            },
+  //console.log('mapp', await getProperties(_index))
+  
+  // only string values are searchable
+  const searchResult = await client
+    .search({
+      index: _index,
+      body: {
+        query: {
+          multi_match: {
+            fields: ['firstname','lastname','gender','employer','email','city','state','address'],
+            query: phrase,
+            type: 'phrase_prefix',
+            //lenient: true
           },
         },
-      }).catch(e=> console.log('errr', field, properties[field]));
-
-      if (
-        searchResult &&
-        searchResult.body &&
-        searchResult.body.hits &&
-        searchResult.body.hits.hits &&
-        searchResult.body.hits.hits.length > 0
-      ) {
-        hits.push(...searchResult.body.hits.hits);
-      }
-    }
-  }
-
-  /*const searchResultFirstName = await client.search({
-    index: _index,
-    body: {
-      query: {
-        match_phrase_prefix: {
-          firstname: phrase,
-        },
       },
-    },
-  });
+    })
+    .catch((e) => console.log('errr', e));
 
   if (
-    searchResultFirstName &&
-    searchResultFirstName.body &&
-    searchResultFirstName.body.hits &&
-    searchResultFirstName.body.hits.hits &&
-    searchResultFirstName.body.hits.hits.length > 0
+    searchResult &&
+    searchResult.body &&
+    searchResult.body.hits &&
+    searchResult.body.hits.hits &&
+    searchResult.body.hits.hits.length > 0
   ) {
-    hits.push(...searchResultFirstName.body.hits.hits);
-  }*/
+    hits.push(...searchResult.body.hits.hits);
+  }
 
   return {
     hitsCount: hits.length,
