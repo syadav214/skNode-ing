@@ -27,10 +27,33 @@ const getProperties = (_index) => {
   });
 };
 
+const highlightingResults = (hits, phrase) => {
+  phrase = phrase.toLowerCase();
+  for (let i in hits) {
+    hits[i]['_highlightResult'] = highlightingResults2(hits[i]._source, phrase);
+    break;
+  }
+  return hits;
+};
+
+const highlightingResults2 = (source, phrase) => {
+  const _highlightResult = {};
+  for (let i in source) {
+    const sourceField = source[i].toString().toLowerCase();
+    const matched = sourceField.includes(phrase);
+    _highlightResult[i] = {
+      matched,
+      matchedWords: matched ? phrase : '',
+      value: source[i],
+    };
+  }
+  return _highlightResult;
+};
+
 module.exports = async (_index, phrase) => {
   const hits = [];
   //console.log('mapp', await getProperties(_index))
-  
+
   // only string values are searchable
   const searchResult = await client
     .search({
@@ -38,7 +61,16 @@ module.exports = async (_index, phrase) => {
       body: {
         query: {
           multi_match: {
-            fields: ['firstname','lastname','gender','employer','email','city','state','address'],
+            fields: [
+              'firstname',
+              'lastname',
+              'gender',
+              'employer',
+              'email',
+              'city',
+              'state',
+              'address',
+            ],
             query: phrase,
             type: 'phrase_prefix',
             //lenient: true
@@ -47,7 +79,7 @@ module.exports = async (_index, phrase) => {
       },
     })
     .catch((e) => console.log('errr', e));
-
+  //console.log('searchResult',searchResult)
   if (
     searchResult &&
     searchResult.body &&
@@ -55,7 +87,10 @@ module.exports = async (_index, phrase) => {
     searchResult.body.hits.hits &&
     searchResult.body.hits.hits.length > 0
   ) {
-    hits.push(...searchResult.body.hits.hits);
+    let hitsArr = searchResult.body.hits.hits;
+    //console.log('hitsObj',...searchResult.body.hits.hits)
+    hitsArr = highlightingResults(hitsArr, phrase);
+    hits.push(...hitsArr);
   }
 
   return {
