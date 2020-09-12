@@ -31,7 +31,6 @@ const highlightingResults = (hits, phrase) => {
   phrase = phrase.toLowerCase();
   for (let i in hits) {
     hits[i]['_highlightResult'] = highlightingResults2(hits[i]._source, phrase);
-    break;
   }
   return hits;
 };
@@ -50,7 +49,7 @@ const highlightingResults2 = (source, phrase) => {
   return _highlightResult;
 };
 
-module.exports = async (_index, phrase) => {
+const search = async (_index, phrase) => {
   const hits = [];
   //console.log('mapp', await getProperties(_index))
 
@@ -97,4 +96,56 @@ module.exports = async (_index, phrase) => {
     hitsCount: hits.length,
     hits,
   };
+};
+
+const facetResults = (hits, facet) => {
+  const result = [];
+  for (let i in hits) {
+    result.push(hits[i]._source[facet]);
+  }
+  return result;
+};
+
+const facetSearch = async (_index, facet, phrase) => {
+  const hits = [];
+  //console.log('mapp', await getProperties(_index))
+
+  // only string values are searchable
+  const searchResult = await client
+    .search({
+      index: _index,
+      body: {
+        query: {
+          multi_match: {
+            fields: [facet],
+            query: phrase,
+            type: 'phrase_prefix',
+            //lenient: true
+          },
+        },
+      },
+    })
+    .catch((e) => console.log('errr', e));
+  //console.log('searchResult',searchResult)
+  if (
+    searchResult &&
+    searchResult.body &&
+    searchResult.body.hits &&
+    searchResult.body.hits.hits &&
+    searchResult.body.hits.hits.length > 0
+  ) {
+    let hitsArr = searchResult.body.hits.hits;
+    hitsArr = facetResults(hitsArr, facet);
+    hits.push(...hitsArr);
+  }
+
+  return {
+    hitsCount: hits.length,
+    hits,
+  };
+};
+
+module.exports = {
+  search,
+  facetSearch,
 };
