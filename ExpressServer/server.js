@@ -18,14 +18,20 @@ app.post('/', (req, res) => {
 });
 
 app.get('/search/:index', async (req, res) => {
-  const { search } = require('./SearchEngine');
-  const data = await search(req.params.index, req.query.phrase);
+  const { phraseSearch } = require('./SearchEngine');
+  const data = await phraseSearch(req.params.index, req.query.q);
+  res.json(data);
+});
+
+app.get('/facets/:index/:facet', async (req, res) => {
+  const { facets } = require('./SearchEngine');
+  const data = await facets(req.params.index, req.params.facet);
   res.json(data);
 });
 
 app.get('/facetSearch/:index/:facet', async (req, res) => {
   const { facetSearch } = require('./SearchEngine');
-  const data = await facetSearch(req.params.index, req.params.facet, req.query.phrase);
+  const data = await facetSearch(req.params.index, req.params.facet, req.query.q);
   res.json(data);
 });
 

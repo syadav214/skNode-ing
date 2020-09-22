@@ -27,29 +27,7 @@ const getProperties = (_index) => {
   });
 };
 
-const highlightingResults = (hits, phrase) => {
-  phrase = phrase.toLowerCase();
-  for (let i in hits) {
-    hits[i]['_highlightResult'] = highlightingResults2(hits[i]._source, phrase);
-  }
-  return hits;
-};
-
-const highlightingResults2 = (source, phrase) => {
-  const _highlightResult = {};
-  for (let i in source) {
-    const sourceField = source[i].toString().toLowerCase();
-    const matched = sourceField.includes(phrase);
-    _highlightResult[i] = {
-      matched,
-      matchedWords: matched ? phrase : '',
-      value: source[i],
-    };
-  }
-  return _highlightResult;
-};
-
-const search = async (_index, phrase) => {
+const phraseSearch = async (_index, phrase) => {
   const hits = [];
   //console.log('mapp', await getProperties(_index))
 
@@ -75,6 +53,18 @@ const search = async (_index, phrase) => {
             //lenient: true
           },
         },
+        highlight: {
+          fields: {
+            firstname: {},
+            lastname: {},
+            gender: {},
+            employer: {},
+            email: {},
+            city: {},
+            state: {},
+            address: {},
+          },
+        },
       },
     })
     .catch((e) => console.log('errr', e));
@@ -86,15 +76,43 @@ const search = async (_index, phrase) => {
     searchResult.body.hits.hits &&
     searchResult.body.hits.hits.length > 0
   ) {
-    let hitsArr = searchResult.body.hits.hits;
-    //console.log('hitsObj',...searchResult.body.hits.hits)
-    hitsArr = highlightingResults(hitsArr, phrase);
-    hits.push(...hitsArr);
+    hits.push(...searchResult.body.hits.hits);
   }
 
   return {
     hitsCount: hits.length,
     hits,
+  };
+};
+
+const facets = async (_index, facet) => {
+  const buckets = [];
+  const facetsResult = await client
+    .search({
+      index: _index,
+      body: {
+        aggs: {
+          all: {
+            terms: { field: `${facet}.keyword` },
+          },
+        },
+      },
+    })
+    .catch((e) => console.log('errr', e));
+
+  if (
+    facetsResult &&
+    facetsResult.body &&
+    facetsResult.body.aggregations &&
+    facetsResult.body.aggregations.all &&
+    facetsResult.body.aggregations.all.buckets.length > 0
+  ) {
+    buckets.push(...facetsResult.body.aggregations.all.buckets);
+  }
+
+  return {
+    bucketCount: buckets.length,
+    buckets,
   };
 };
 
@@ -108,7 +126,6 @@ const facetResults = (hits, facet) => {
 
 const facetSearch = async (_index, facet, phrase) => {
   const hits = [];
-  //console.log('mapp', await getProperties(_index))
 
   // only string values are searchable
   const searchResult = await client
@@ -146,6 +163,7 @@ const facetSearch = async (_index, facet, phrase) => {
 };
 
 module.exports = {
-  search,
+  phraseSearch,
+  facets,
   facetSearch,
 };
