@@ -11,7 +11,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3333/search/bank?q=mill",
+					"raw": "http://localhost:3333/search/bank/_doc?q=Sant",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -19,12 +19,13 @@
 					"port": "3333",
 					"path": [
 						"search",
-						"bank"
+						"bank",
+						"_doc"
 					],
 					"query": [
 						{
 							"key": "q",
-							"value": "mill"
+							"value": "Sant"
 						}
 					]
 				}
@@ -37,7 +38,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3333/facetSearch/bank/address?q=12",
+					"raw": "http://localhost:3333/facetSearch/bank/_doc/address?q=55",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -46,12 +47,13 @@
 					"path": [
 						"facetSearch",
 						"bank",
+						"_doc",
 						"address"
 					],
 					"query": [
 						{
 							"key": "q",
-							"value": "12"
+							"value": "55"
 						}
 					]
 				}
@@ -64,7 +66,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:3333/facets/bank/address",
+					"raw": "http://localhost:3333/facets/bank/_doc/address",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -73,7 +75,39 @@
 					"path": [
 						"facets",
 						"bank",
+						"_doc",
 						"address"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Index Doc",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"account_number\": 261,\r\n    \"balance\": 39998,\r\n    \"firstname\": \"Millicent\",\r\n    \"lastname\": \"Pickett\",\r\n    \"age\": 34,\r\n    \"gender\": \"F\",\r\n    \"address\": \"722 Montieth Street\",\r\n    \"employer\": \"Gushkool\",\r\n    \"email\": \"millicentpickett@gushkool.com\",\r\n    \"city\": \"Norwood\",\r\n    \"state\": \"MS\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3333/save/bank/_doc/261",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3333",
+					"path": [
+						"save",
+						"bank",
+						"_doc",
+						"261"
 					]
 				}
 			},

@@ -1,3 +1,17 @@
+/*
+https://www.compose.com/articles/getting-started-with-elasticsearch-and-node/
+var elasticsearch=require('elasticsearch');
+
+var client = new elasticsearch.Client( {  
+  hosts: [
+    'https://[username]:[password]@[server]:[port]/',
+    'https://[username]:[password]@[server]:[port]/'
+  ]
+});
+
+module.exports = client;  
+*/
+
 const { Client } = require('@elastic/elasticsearch');
 const client = new Client({ node: 'http://localhost:9200' });
 
@@ -27,7 +41,7 @@ const getProperties = (_index) => {
   });
 };
 
-const phraseSearch = async (_index, phrase) => {
+const phraseSearch = async (_index, _type, phrase) => {
   const hits = [];
   //console.log('mapp', await getProperties(_index))
 
@@ -35,6 +49,7 @@ const phraseSearch = async (_index, phrase) => {
   const searchResult = await client
     .search({
       index: _index,
+      type: _type,
       body: {
         query: {
           multi_match: {
@@ -85,11 +100,12 @@ const phraseSearch = async (_index, phrase) => {
   };
 };
 
-const facets = async (_index, facet) => {
+const facets = async (_index, _type, facet) => {
   const buckets = [];
   const facetsResult = await client
     .search({
       index: _index,
+      type: _type,
       body: {
         aggs: {
           all: {
@@ -124,13 +140,14 @@ const facetResults = (hits, facet) => {
   return result;
 };
 
-const facetSearch = async (_index, facet, phrase) => {
+const facetSearch = async (_index, _type, facet, phrase) => {
   const hits = [];
 
   // only string values are searchable
   const searchResult = await client
     .search({
       index: _index,
+      type: _type,
       body: {
         query: {
           multi_match: {
@@ -162,8 +179,22 @@ const facetSearch = async (_index, facet, phrase) => {
   };
 };
 
+const indexDocument = async (_index, _type, objectID, document) => {
+  const insertResult = await client
+    .index({
+      index: _index,
+      type: _type,
+      id: objectID,
+      body: document,
+    })
+    .catch((e) => console.log('errr', e));
+
+  return insertResult;
+};
+
 module.exports = {
   phraseSearch,
   facets,
   facetSearch,
+  indexDocument,
 };

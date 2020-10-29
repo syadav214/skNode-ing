@@ -17,21 +17,31 @@ app.post('/', (req, res) => {
   res.json(req.body);
 });
 
-app.get('/search/:index', async (req, res) => {
+// searching on query
+app.get('/search/:index/:type', async (req, res) => {
   const { phraseSearch } = require('./SearchEngine');
-  const data = await phraseSearch(req.params.index, req.query.q);
+  const data = await phraseSearch(req.params.index, req.params.type, req.query.q);
   res.json(data);
 });
 
-app.get('/facets/:index/:facet', async (req, res) => {
+// provides unique values of a given facet
+app.get('/facets/:index/:type/:facet', async (req, res) => {
   const { facets } = require('./SearchEngine');
-  const data = await facets(req.params.index, req.params.facet);
+  const data = await facets(req.params.index, req.params.type, req.params.facet);
   res.json(data);
 });
 
-app.get('/facetSearch/:index/:facet', async (req, res) => {
+// searching on query for a given facet
+app.get('/facetSearch/:index/:type/:facet', async (req, res) => {
   const { facetSearch } = require('./SearchEngine');
-  const data = await facetSearch(req.params.index, req.params.facet, req.query.q);
+  const data = await facetSearch(req.params.index, req.params.type, req.params.facet, req.query.q);
+  res.json(data);
+});
+
+// indexing data
+app.post('/save/:index/:type/:id', async (req, res) => {
+  const { indexDocument } = require('./SearchEngine');
+  const data = await indexDocument(req.params.index, req.params.type, req.params.id, req.body);
   res.json(data);
 });
 
